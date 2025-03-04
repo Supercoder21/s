@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Letter Grid</title>
+    <style>
+        /* Set up base styles */
+        :root {
+            --font-size: 5rem; /* Base font size for letters */
+            --cursor-size: 6rem; /* Default cursor size */
+            --grid-size: 10; /* 10x10 grid */
+            --background-gradient: radial-gradient(circle, rgba(0, 0, 0, 1) 0%, rgba(0,0,0, 1) 100%);
+            --letter-color: rgba(255, 255, 255, 0.8);
+            --link-color: #7d42ff;
+            --hover-color: #f7a000;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', Courier, monospace;
+            background: var(--background-gradient);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            color: var(--letter-color);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(var(--grid-size), 1fr);
+            grid-template-rows: repeat(var(--grid-size), 1fr);
+            gap: 2px;
+            width: 70vmin;
+            height: 70vmin;
+            position: relative;
+        }
+
+        .grid .letter {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size);
+            cursor: none;
+            transition: transform 0.3s ease, color 0.3s ease;
+            position: relative;
+        }
+
+        .grid .letter:hover {
+            transform: scale(1.2);
+            color: var(--hover-color);
+            text-shadow: 0 0 15px var(--hover-color), 0 0 25px var(--hover-color);
+        }
+
+        .grid .letter.link {
+            font-size: calc(var(--font-size) * 1.2);
+            color: var(--link-color);
+            text-shadow: 0 0 10px var(--link-color), 0 0 20px var(--link-color);
+        }
+
+        /* Cursor styles */
+        .cursor {
+            position: fixed;
+            width: var(--cursor-size);
+            height: var(--cursor-size);
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.6);
+            pointer-events: none;
+            z-index: 1000;
+            transform: translate(-50%, -50%);
+            transition: transform 0.2s ease, width 0.2s ease, height 0.2s ease;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.6), 0 0 40px rgba(255, 255, 255, 0.8);
+        }
+
+        /* Animation and responsiveness */
+        @media (max-width: 768px) {
+            :root {
+                --font-size: .5rem;
+                --cursor-size: 1rem;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            :root {
+                --font-size: 1rem;
+                --cursor-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="grid" id="letter-grid"></div>
+
+    <div class="cursor" id="cursor"></div>
+
+    <script>
+        // Letter grid generation and interaction
+        const gridSize = 10; // 10x10 grid
+        const letters = ['S']; // Letters to be used
+        const letterGrid = document.getElementById('letter-grid');
+        const cursor = document.getElementById('cursor');
+
+        // Function to generate the grid
+        const generateGrid = () => {
+            letterGrid.innerHTML = ''; // Clear any existing grid
+
+            const totalCells = gridSize * gridSize; // 10x10 grid = 100 cells
+            const randomLinkIndex = Math.floor(Math.random() * totalCells); // Randomly select a cell to be a link
+
+            for (let i = 0; i < totalCells; i++) {
+                const letterElement = document.createElement('div');
+                letterElement.classList.add('letter');
+                letterElement.textContent = letters[0];
+
+                // Make one letter a link with bigger size
+                if (i === randomLinkIndex) {
+                    letterElement.classList.add('link');
+                    letterElement.innerHTML = `<a href="https://www.example.com" target="_blank">${letters[0]}</a>`;
+                }
+
+                letterGrid.appendChild(letterElement);
+            }
+        };
+
+        // Update cursor position and size based on mouse hover
+        const updateCursor = (e) => {
+            const letter = e.target;
+
+            cursor.style.left = `${e.pageX}px`;
+            cursor.style.top = `${e.pageY}px`;
+
+            // Change cursor size if hovering over a link
+            if (letter.classList.contains('link')) {
+                cursor.style.transform = 'scale(1.4)';
+            } else {
+                cursor.style.transform = 'scale(1)';
+            }
+        };
+
+        // Handle mouse move to update cursor position
+        document.addEventListener('mousemove', updateCursor);
+
+        // Initialize the grid and cursor
+        generateGrid();
+    </script>
+
+</body>
+</html>
